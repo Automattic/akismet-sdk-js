@@ -1,0 +1,35 @@
+name: Workflows audit
+
+# Static audit of the workflow files: template injection, persisted credentials,
+# unpinned actions, excessive permissions, and similar mistakes.
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+  schedule:
+    - cron: '41 5 * * 1'
+
+permissions: {}
+
+concurrency:
+  group: workflows-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  zizmor:
+    name: zizmor
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # check out the repository
+    steps:
+      # Pinned to commits like the other workflows; bump the SHA and the comment together.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Findings print in the log and fail the job, with no upload to code scanning.
+      # The zizmor version matches the action release, so a run is reproducible.
+      - uses: zizmorcore/zizmor-action@85b2b9fb8e3325e7a23d7d0a9d7ba5ae0f999e3e # v0.7.1
+        with:
+          inputs: .github/workflows
+          advanced-security: false
+          version: 1.31.1

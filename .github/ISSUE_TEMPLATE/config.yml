@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/Automattic/akismet-sdk-js/security/policy
+    about: Email security@automattic.com privately. SECURITY.md has the details.
+  - name: Akismet account, billing, or a spam verdict
+    url: https://akismet.com/contact/
+    about: Akismet support handles questions about your key, your plan, or a verdict you think is wrong.

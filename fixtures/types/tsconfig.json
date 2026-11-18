@@ -1,0 +1,17 @@
+{
+  // A strict consumer with web globals and no @types/node. skipLibCheck is off, so
+  // the shipped dist/index.d.ts is itself checked by each TypeScript version.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2023", "DOM"],
+    "types": [],
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": false,
+    "noEmit": true
+  },
+  "files": ["consumer.ts"]
+}

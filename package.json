@@ -1,0 +1,91 @@
+{
+  "name": "@automattic/akismet",
+  "version": "1.0.0",
+  "description": "Official JavaScript SDK for the Akismet spam protection API",
+  "license": "MIT",
+  "author": "Automattic",
+  "homepage": "https://github.com/Automattic/akismet-sdk-js#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Automattic/akismet-sdk-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Automattic/akismet-sdk-js/issues"
+  },
+  "keywords": [
+    "akismet",
+    "spam",
+    "anti-spam",
+    "spam-detection",
+    "comment-spam",
+    "typescript",
+    "esm"
+  ],
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "SKILL.md"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "lint": "eslint src test examples *.js",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -p tsconfig.eslint.json && tsc -p examples",
+    "check:package": "npm run build && publint && attw --pack . --profile esm-only && npm run check:version && npm run check:internals && npm run check:edge-types",
+    "check:version": "node -e \"import('./dist/index.js').then(({ SDK_VERSION }) => { if (SDK_VERSION !== require('./package.json').version) throw new Error('dist reports version ' + SDK_VERSION); })\"",
+    "check:internals": "node -e \"const fs = require('node:fs'); const leaks = fs.readdirSync('dist', { recursive: true }).filter((f) => f.endsWith('.d.ts') && f !== 'http-client.d.ts' && /\\bHttpClient\\b|\\bRequestContext\\b/.test(fs.readFileSync('dist/' + f, 'utf8'))); if (leaks.length > 0) throw new Error('public typings name HttpClient or RequestContext: ' + leaks.join(', '));\"",
+    "check:edge-types": "tsc -p tsconfig.edge.json",
+    "prepublishOnly": "npm run check:package",
+    "version-packages": "changeset version && node -e \"const fs = require('node:fs'); const { version } = JSON.parse(fs.readFileSync('package.json', 'utf8')); const file = 'src/version.ts'; fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace(/(SDK_VERSION = ').*(')/, '\\$1' + version + '\\$2'));\"",
+    "test:live": "vitest run --config vitest.live.config.ts"
+  },
+  "lint-staged": {
+    "*.{ts,js,mjs,cjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": "prettier --write"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@changesets/cli": "^3.0.3",
+    "@eslint/js": "^10.0.1",
+    "@hono/node-server": "^1.19.5",
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.13.10",
+    "@vitest/coverage-v8": "^5.0.5",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import-x": "^4.17.1",
+    "eslint-plugin-n": "^17.24.0",
+    "eslint-plugin-unicorn": "^64.0.0",
+    "express": "^5.1.0",
+    "fastify": "^5.6.1",
+    "globals": "^16.0.0",
+    "hono": "^4.10.3",
+    "lefthook": "^2.1.6",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.3",
+    "publint": "^0.3.18",
+    "tsx": "^4.20.6",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.72.0",
+    "vitest": "^5.0.5"
+  }
+}

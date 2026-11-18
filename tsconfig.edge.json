@@ -1,0 +1,15 @@
+{
+  // An edge project as a consumer sees it: web globals, no @types/node. The published
+  // typings must compile here, so check:package runs this against dist/index.d.ts.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2023", "DOM"],
+    "types": [],
+    "strict": true,
+    "skipLibCheck": false,
+    "noEmit": true
+  },
+  "files": ["dist/index.d.ts"]
+}

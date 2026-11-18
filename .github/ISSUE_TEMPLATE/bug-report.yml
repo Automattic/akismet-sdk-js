@@ -1,0 +1,48 @@
+name: Bug report
+description: The SDK throws when it shouldn't, sends the wrong request, or misreads a response.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. Issues are public, so before you post, remove your Akismet API key and any data about real users (IP addresses, emails, comment text) from your code and logs. SDK error messages already redact the key, but your own logs may not.
+  - type: input
+    id: version
+    attributes:
+      label: SDK version
+      description: '`SDK_VERSION`, or the version in your lockfile.'
+      placeholder: 1.0.0
+    validations:
+      required: true
+  - type: input
+    id: runtime
+    attributes:
+      label: Runtime and version
+      placeholder: Node.js 22.12, Bun 1.4, Deno 2.9, Cloudflare Workers
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: 'The smallest code that shows the problem. Use `isTest: true` and a placeholder key.'
+      render: ts
+  - type: textarea
+    id: error
+    attributes:
+      label: Error output
+      description: The full error, including its `cause`. The SDK already redacts your key from it.
+      render: text
+  - type: checkboxes
+    id: redacted
+    attributes:
+      label: Before you post
+      options:
+        - label: I've removed my API key and any real user data from this report.
+          required: true

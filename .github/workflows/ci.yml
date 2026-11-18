@@ -1,0 +1,134 @@
+name: CI
+
+# Trunk pushes run these checks through release.yml, which publishes only after they pass.
+on:
+  pull_request:
+  workflow_call:
+
+permissions: {}
+
+# A new push to a pull request cancels its older run. Trunk runs always finish.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # Lint, types, and formatting do not depend on the Node version, so they run once.
+  static:
+    name: Lint, types, format
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # check out the repository
+    steps:
+      # Pinned to commits like release.yml; bump the SHA and the comment together.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
+          cache: npm
+      # Dependency install scripts never run in CI. The build and checks need none.
+      - run: npm ci --ignore-scripts
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run format:check
+
+  checks:
+    name: Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # check out the repository
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24, 26]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      - run: npm run check:package
+
+  package:
+    name: Package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # check out the repository
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - run: npm pack && mv automattic-akismet-*.tgz fixtures/akismet.tgz
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: package
+          path: fixtures/akismet.tgz
+          if-no-files-found: error
+          retention-days: 7
+
+  runtimes:
+    name: ${{ matrix.runtime }}${{ matrix.typescript && format(' (TypeScript {0})', matrix.typescript) || '' }}
+    needs: [package]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # check out the repository
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime: [node, bun, deno, workers]
+        # The supported TypeScript lines. The support policy in README.md names these.
+        include:
+          - runtime: types
+            typescript: '5.9'
+          - runtime: types
+            typescript: '6'
+          - runtime: types
+            typescript: '7'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: package
+          path: fixtures
+      # Each fixture names its runtime version, so CI installs exactly that one.
+      # The node fixture pins 22.12, the first release that can require() an ES module.
+      - if: matrix.runtime == 'node'
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version-file: fixtures/node/.nvmrc
+      - if: matrix.runtime == 'bun'
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: fixtures/bun/package.json
+      - if: matrix.runtime == 'deno'
+        uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
+        with:
+          deno-version-file: fixtures/deno/.dvmrc
+      - if: matrix.runtime == 'workers'
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: fixtures/workers/package-lock.json
+      - if: matrix.runtime == 'types'
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
+      - run: fixtures/run.sh "$RUNTIME"
+        env:
+          RUNTIME: ${{ matrix.runtime }}
+          TYPESCRIPT: ${{ matrix.typescript }}

@@ -1,0 +1,8 @@
+{
+  "name": "akismet-fixture-deno",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@automattic/akismet": "file:../akismet.tgz"
+  }
+}

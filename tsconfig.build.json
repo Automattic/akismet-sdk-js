@@ -1,0 +1,15 @@
+{
+  // Emits dist/ one file per module. No bundler: nothing renames classes, and an error's
+  // `name` comes from its class.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "rootDir": "src",
+    "outDir": "dist",
+    "declaration": true,
+    "sourceMap": true,
+    // src/ is not in the tarball, so the maps carry the source text.
+    "inlineSources": true
+  },
+  "include": ["src/**/*.ts"]
+}

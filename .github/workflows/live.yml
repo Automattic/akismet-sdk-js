@@ -1,0 +1,32 @@
+name: Live API
+
+# Contract tests against the real API in test mode, to catch server drift. Never on
+# pull requests: fork PRs cannot read the secret, and the mocked wire tests gate merges.
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  live:
+    name: Live API (test mode)
+    if: github.repository == 'Automattic/akismet-sdk-js'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # check out the repository
+    steps:
+      # Pinned to commits like release.yml; bump the SHA and the comment together.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run test:live
+        env:
+          AKISMET_TEST_API_KEY: ${{ secrets.AKISMET_TEST_API_KEY }}
+          AKISMET_TEST_SITE: ${{ secrets.AKISMET_TEST_SITE }}

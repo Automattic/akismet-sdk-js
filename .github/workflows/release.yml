@@ -1,0 +1,95 @@
+name: Release
+
+# Versions are bumped in a normal PR (`npm run version-packages`); this workflow only
+# publishes. It first runs the full CI workflow on the pushed commit, so nothing is
+# published, or even offered for approval, before every check passes. `preflight` asks
+# npm whether the version in package.json is already published, so pushes that do not
+# bump the version finish without an approval request. `publish` runs in the `npm`
+# environment, which waits for a maintainer.
+on:
+  push:
+    branches: [trunk]
+
+permissions: {}
+
+jobs:
+  ci:
+    name: CI
+    # A local reusable workflow resolves from this run's commit, not the runner's disk.
+    uses: ./.github/workflows/ci.yml # zizmor: ignore[self-repository]
+    permissions:
+      contents: read # the CI jobs check out the repository
+
+  preflight:
+    name: Check npm for this version
+    needs: [ci]
+    # Trusted publishing is bound to this repository; a fork's run would only fail.
+    if: github.repository == 'Automattic/akismet-sdk-js'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      needed: ${{ steps.check.outputs.needed }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - id: check
+        # npm answers E404 both for an unpublished version and for a package that has
+        # never been published. Any other failure stops the run rather than guessing.
+        run: |
+          name="$(node -p "require('./package.json').name")"
+          version="$(node -p "require('./package.json').version")"
+          if published="$(npm view "${name}@${version}" version 2> npm-view.err)"; then
+            if [ "${published}" = "${version}" ]; then needed=false; else needed=true; fi
+          elif grep -q 'code E404' npm-view.err; then
+            needed=true
+          else
+            cat npm-view.err >&2
+            exit 1
+          fi
+          echo "${name}@${version} published: ${published:-no}; publish needed: ${needed}"
+          echo "needed=${needed}" >> "$GITHUB_OUTPUT"
+
+  publish:
+    name: Publish to npm
+    needs: [preflight]
+    if: needs.preflight.outputs.needed == 'true'
+    # Required reviewers on this environment approve each publish. The npm trusted
+    # publisher entry names the environment, so a run outside it cannot publish.
+    environment: npm
+    # One publish at a time, so trunk CI never waits behind a pending approval. If two
+    # runs race, npm rejects the later one, as described at the publish step.
+    concurrency:
+      group: release
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm trusted publishing (OIDC); no token secret exists
+    steps:
+      # Pinned to commits: this job can mint an npm publish token, and a moved tag
+      # would run code nobody reviewed. Bump the SHA and the comment together.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          # Trusted publishing needs npm 11.5.1+, which Node 24 bundles.
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          # No dependency cache in a release build: a poisoned cache would ship.
+          package-manager-cache: false
+      # No dependency install scripts in a job that can mint an npm publish token.
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      # prepublishOnly builds and runs check:package before each publish. Plain npm
+      # publish, not `changeset publish`: with no --tag, npm refuses a version lower than
+      # `latest`, so a stale approval fails instead of moving `latest` backward. A version
+      # that is already published fails too. Changesets passes --tag latest explicitly,
+      # which skips that check.
+      - run: npm publish

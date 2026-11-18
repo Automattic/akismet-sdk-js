@@ -1,0 +1,26 @@
+# Auto-detect text files and perform LF normalization.
+* text=auto eol=lf
+
+# Files kept out of `git archive` tarballs.
+# (npm packaging uses the `files` field in package.json instead.)
+.changeset/             export-ignore
+.github/                export-ignore
+.gitattributes          export-ignore
+.gitignore              export-ignore
+.prettierignore         export-ignore
+.prettierrc.json        export-ignore
+AGENTS.md               export-ignore
+CLAUDE.md               export-ignore
+CODE-OF-CONDUCT.md      export-ignore
+CONTRIBUTING.md         export-ignore
+SECURITY.md             export-ignore
+eslint.config.js        export-ignore
+examples/               export-ignore
+fixtures/               export-ignore
+lefthook.yml            export-ignore
+renovate.json           export-ignore
+test/                   export-ignore
+tsconfig.edge.json      export-ignore
+tsconfig.eslint.json    export-ignore
+vitest.config.ts        export-ignore
+vitest.live.config.ts   export-ignore
