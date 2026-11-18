@@ -134,8 +134,9 @@ Maintainers only:
 
 1. Merge PRs with pending changesets
 2. Open a release PR that runs `npm run version-packages`, and review the generated version bump and `CHANGELOG.md` by hand
-3. Merge it. The [Release workflow](.github/workflows/release.yml) runs every CI check on the merged commit first. If they pass, it finds the new version missing from npm, and its `publish` job waits for approval in the `npm` environment. Pushes that do not bump the version skip the job, so nobody is asked to approve.
-4. Another maintainer approves the deployment from the workflow run (**Review deployments**). The person who triggered the run cannot approve it. The job then publishes with provenance through [npm trusted publishing](https://docs.npmjs.com/trusted-publishers). The repository stores no npm token.
+3. Check that the package has a trusted publisher on npmjs.com (package settings → **Trusted publisher**). npm expires a new trusted publisher that does not publish within 2 days, so if none is listed, create one no more than 2 days before you merge: GitHub Actions, owner `Automattic`, repository `akismet-sdk-js`, workflow `release.yml`, environment `npm`. Under **Allowed actions**, enable `npm publish`: new publishers allow only `npm stage publish`, and the workflow publishes directly.
+4. Merge the release PR. The [Release workflow](.github/workflows/release.yml) runs every CI check on the merged commit first. If they pass, it finds the new version missing from npm, and its `publish` job waits for approval in the `npm` environment. Pushes that do not bump the version skip the job, so nobody is asked to approve.
+5. Another maintainer approves the deployment from the workflow run (**Review deployments**). The person who triggered the run cannot approve it. The job then publishes with provenance through [npm trusted publishing](https://docs.npmjs.com/trusted-publishers). The repository stores no npm token.
 
 ## Getting help
 

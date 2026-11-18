@@ -96,7 +96,8 @@ export default tseslint.config(
     },
   },
   {
-    // fixtures/types compiles against the installed tarball; its matrix tsc run is its check.
-    ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'fixtures/types/**'],
+    // Fixtures run against the installed tarball in the CI runtimes matrix; that run is
+    // their check. Linting them here would need each fixture's own install (wrangler, etc.).
+    ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'fixtures/**'],
   }
 );
