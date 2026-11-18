@@ -1,5 +1,3 @@
-// run.sh installs the tarball without saving it, so package.json cannot list it.
-// eslint-disable-next-line n/no-extraneous-import
 import * as sdk from '@automattic/akismet';
 import { smoke } from '../../smoke.js';
 

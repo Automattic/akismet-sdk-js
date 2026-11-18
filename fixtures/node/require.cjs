@@ -1,5 +1,4 @@
 // The README promises that CommonJS projects on Node 22.12+ can require() the package.
-// eslint-disable-next-line @typescript-eslint/no-require-imports -- require() is what this fixture tests
 const sdk = require('@automattic/akismet');
 
 import('../smoke.js')
