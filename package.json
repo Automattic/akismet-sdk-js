@@ -52,7 +52,7 @@
     "check:internals": "node -e \"const fs = require('node:fs'); const leaks = fs.readdirSync('dist', { recursive: true }).filter((f) => f.endsWith('.d.ts') && f !== 'http-client.d.ts' && /\\bHttpClient\\b|\\bRequestContext\\b/.test(fs.readFileSync('dist/' + f, 'utf8'))); if (leaks.length > 0) throw new Error('public typings name HttpClient or RequestContext: ' + leaks.join(', '));\"",
     "check:edge-types": "tsc -p tsconfig.edge.json",
     "prepublishOnly": "npm run check:package",
-    "version-packages": "changeset version && node -e \"const fs = require('node:fs'); const { version } = JSON.parse(fs.readFileSync('package.json', 'utf8')); const file = 'src/version.ts'; fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace(/(SDK_VERSION = ').*(')/, '\\$1' + version + '\\$2'));\"",
+    "version-packages": "changeset version && node -e \"const fs = require('node:fs'); const { version } = JSON.parse(fs.readFileSync('package.json', 'utf8')); const file = 'src/version.ts'; fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace(/(SDK_VERSION = ').*(')/, '\\$1' + version + '\\$2')); const lockFile = 'package-lock.json'; const lock = JSON.parse(fs.readFileSync(lockFile, 'utf8')); lock.version = version; lock.packages[''].version = version; fs.writeFileSync(lockFile, JSON.stringify(lock, null, 2) + '\\n');\"",
     "test:live": "vitest run --config vitest.live.config.ts"
   },
   "lint-staged": {

@@ -111,7 +111,7 @@ npx changeset
 
 This prompts for the bump type (patch/minor/major) and a summary. A markdown file lands in `.changeset/`. Commit it with your PR.
 
-On release, `npm run version-packages` runs `changeset version`, which aggregates all pending changesets into `CHANGELOG.md` and bumps `package.json`, then copies the new version into `src/version.ts`.
+On release, `npm run version-packages` runs `changeset version`, which aggregates all pending changesets into `CHANGELOG.md` and bumps `package.json`, then copies the new version into `src/version.ts` and `package-lock.json`.
 
 ## Pull requests
 
@@ -137,6 +137,14 @@ Maintainers only:
 3. Check that the package has a trusted publisher on npmjs.com (package settings → **Trusted publisher**). npm expires a new trusted publisher that does not publish within 2 days, so if none is listed, create one no more than 2 days before you merge: GitHub Actions, owner `Automattic`, repository `akismet-sdk-js`, workflow `release.yml`, environment `npm`. Under **Allowed actions**, enable `npm publish`: new publishers allow only `npm stage publish`, and the workflow publishes directly.
 4. Merge the release PR. The [Release workflow](.github/workflows/release.yml) runs every CI check on the merged commit first. If they pass, it finds the new version missing from npm, and its `publish` job waits for approval in the `npm` environment. Pushes that do not bump the version skip the job, so nobody is asked to approve.
 5. A reviewer on the `npm` environment approves the deployment from the workflow run (**Review deployments**). The person who merged can approve it; the pause makes sure no version bump publishes until someone confirms it. The job then publishes with provenance through [npm trusted publishing](https://docs.npmjs.com/trusted-publishers). The repository stores no npm token.
+6. Once the version is on npm, create the GitHub release from its `CHANGELOG.md` entry:
+
+   ```bash
+   gh release create vX.Y.Z --title X.Y.Z --notes "..." \
+     --target "$(gh pr view <release PR number> --json mergeCommit -q .mergeCommit.oid)"
+   ```
+
+   `--target` must be the full SHA of the release PR's merge commit; the API rejects a short one.
 
 ## Getting help
 
