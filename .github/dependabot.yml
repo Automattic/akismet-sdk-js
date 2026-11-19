@@ -1,0 +1,30 @@
+version: 2
+updates:
+  # The package has no runtime dependencies, so every npm update is a dev tool:
+  # one grouped PR a week. fixtures/workers has its own lockfile for wrangler.
+  - package-ecosystem: npm
+    directories:
+      - /
+      - /fixtures/workers
+    schedule:
+      interval: weekly
+      day: monday
+      time: '05:00'
+      timezone: UTC
+    # Skip versions younger than a week, so a compromised release has time to be pulled.
+    cooldown:
+      default-days: 7
+    groups:
+      dev-dependencies:
+        patterns: ['*']
+
+  # Workflows pin actions to commit SHAs; Dependabot bumps the SHA and its # vX.Y.Z comment.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '05:00'
+      timezone: UTC
+    cooldown:
+      default-days: 7

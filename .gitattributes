@@ -18,7 +18,6 @@ eslint.config.js        export-ignore
 examples/               export-ignore
 fixtures/               export-ignore
 lefthook.yml            export-ignore
-renovate.json           export-ignore
 test/                   export-ignore
 tsconfig.edge.json      export-ignore
 tsconfig.eslint.json    export-ignore
