@@ -1,5 +1,11 @@
 # @automattic/akismet
 
+## 1.0.1
+
+### Patch Changes
+
+- Published from GitHub Actions through npm trusted publishing, so the package carries a provenance attestation that links it to its source commit. No code changes.
+
 ## 1.0.0
 
 First public release of the official server-side JavaScript SDK for the Akismet API. ESM only, MIT. Runs on Node.js 22+ and on edge runtimes with standard `fetch`; the typings need no `@types/node`. The README's support policy lists the Node.js and TypeScript lines CI tests, and the rule for dropping one.
