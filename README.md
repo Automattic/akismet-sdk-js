@@ -16,6 +16,8 @@ npm install @automattic/akismet
 
 Node.js 22 or later. ESM only; CommonJS projects on Node 22.12+ can `require()` it directly.
 
+Using an AI coding agent? Have it read `node_modules/@automattic/akismet/SKILL.md` first. The guide ships with the package, so it matches the version you installed.
+
 ## Quick start
 
 ```ts
