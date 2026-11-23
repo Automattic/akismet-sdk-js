@@ -1,0 +1,2 @@
+# Request a review from the Akismet team on every PR. Reviews stay optional: the trunk ruleset requires none.
+* @Automattic/akismet
