@@ -85,7 +85,7 @@ function resolveClientIp(
   }
 
   const hops = options.trustedProxyHops ?? 0;
-  if (!Number.isInteger(hops) || hops < 0) {
+  if (!Number.isSafeInteger(hops) || hops < 0) {
     throw invalidValue('trustedProxyHops', 'must be a non-negative integer');
   }
 

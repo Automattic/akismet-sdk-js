@@ -33,7 +33,7 @@ export function optionalDecimal(value: unknown): number | null {
 
 /** A non-negative integer header; absent, empty, or anything else reads as `null`. */
 export function headerInt(value: string | undefined): number | null {
-  return value !== undefined && /^\d+$/.test(value) ? Number.parseInt(value, 10) : null;
+  return value !== undefined && /^\d+$/.test(value) ? Number(value) : null;
 }
 
 /** A required integer field: the forms {@link optionalInt} accepts, else the response is unexpected. */

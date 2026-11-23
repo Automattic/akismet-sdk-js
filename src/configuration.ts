@@ -49,7 +49,7 @@ export function normalizeUserAgent(userAgent: string | undefined): string | unde
 }
 
 export function normalizeRetries(retries: number): number {
-  if (!Number.isInteger(retries) || retries < 0) {
+  if (!Number.isSafeInteger(retries) || retries < 0) {
     throw invalidValue('retries', 'must be a non-negative integer');
   }
   return retries;

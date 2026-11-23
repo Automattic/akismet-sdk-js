@@ -26,7 +26,7 @@ function serverNormalizedKey(secret: string): string | null {
  * and the server-normalized form of `secret` in any letter case.
  */
 export function redactSecret(text: string, secret: string | null): string {
-  let out = text.replace(KEY_PARAM, `$1=${REDACTED}`);
+  let out = text.replace(KEY_PARAM, (_match, name: string) => `${name}=${REDACTED}`);
   if (secret !== null && secret !== '') {
     out = out.split(secret).join(REDACTED);
     const encoded = encodeURIComponent(secret);
@@ -36,7 +36,7 @@ export function redactSecret(text: string, secret: string | null): string {
     const normalized = serverNormalizedKey(secret);
     if (normalized !== null) {
       // Only [a-z0-9] remain, so the pattern needs no escaping.
-      out = out.replaceAll(new RegExp(normalized, 'gi'), REDACTED);
+      out = out.replaceAll(new RegExp(normalized, 'gi'), () => REDACTED);
     }
   }
   return out;

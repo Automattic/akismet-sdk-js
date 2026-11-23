@@ -17,16 +17,41 @@ export default tseslint.config(
       // fetch/Request/Response are stable on every supported Node line (22+) and required by this SDK.
       'n/no-unsupported-features/node-builtins': 'off',
       // Stylistic noise we don't want to enforce across a small SDK codebase.
-      'unicorn/prevent-abbreviations': 'off',
+      'unicorn/name-replacements': 'off',
       'unicorn/no-null': 'off',
       'unicorn/prefer-module': 'off',
       'unicorn/prefer-top-level-await': 'off',
       'unicorn/no-array-reduce': 'off',
-      'unicorn/no-array-for-each': 'off',
+      'unicorn/no-for-each': 'off',
       'unicorn/no-negated-condition': 'off',
       'unicorn/consistent-function-scoping': 'off',
       'unicorn/catch-error-name': 'off',
       'unicorn/prefer-string-replace-all': 'off',
+      // JSDoc blocks keep their `*` prefixes, and one-line `/** … */` comments stay on one line.
+      'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
+      'unicorn/single-line-block-comment-style': 'off',
+      // `.catch((error: unknown) => error)` is how a test captures a rejection to inspect it.
+      'unicorn/prefer-await': 'off',
+      // Redaction copies name, stack, and cause onto a fresh Error on purpose.
+      'unicorn/no-error-property-assignment': 'off',
+      // `check(fields, options)` is public API, and every method takes RequestOptions last.
+      'unicorn/prefer-options-parameter': 'off',
+      // `key in options` tells an explicit `undefined` apart from a missing key.
+      'unicorn/no-computed-property-existence-check': 'off',
+      // `viaSupport` is a public field, so renaming it would break callers.
+      'unicorn/consistent-boolean-name': 'off',
+      // Iterator#toArray() needs the ES2025 lib; the repo type-checks against ES2023.
+      'unicorn/prefer-iterator-to-array': 'off',
+      // The SDK sorts only strings, where the default order is the one we want.
+      'unicorn/require-array-sort-compare': 'off',
+      // Readability calls that the rule cannot make: member order, condition order,
+      // ternaries, spreads, loop headers, and where declarations go.
+      'unicorn/consistent-class-member-order': 'off',
+      'unicorn/prefer-simple-condition-first': 'off',
+      'unicorn/prefer-ternary': 'off',
+      'unicorn/consistent-conditional-object-spread': 'off',
+      'unicorn/no-unreadable-for-of-expression': 'off',
+      'unicorn/no-declarations-before-early-exit': 'off',
       'unicorn/filename-case': ['error', { case: 'kebabCase' }],
       // `_label` marks a parameter a callback must accept but does not read, like an it.each label.
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],

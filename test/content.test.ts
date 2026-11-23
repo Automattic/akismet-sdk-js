@@ -124,7 +124,7 @@ describe('caller-chosen wire keys', () => {
     [' user_role', 'leading space'],
     ['user_role[', 'unmatched bracket'],
     ['user.role[x]', 'bracket'],
-    ['user_role\u0000x', 'NUL byte'],
+    ['user_role\0x', 'NUL byte'],
     ['a=b', 'equals sign'],
   ];
 
