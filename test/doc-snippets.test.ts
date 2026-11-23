@@ -62,8 +62,7 @@ function diagnostics(file: string): string[] {
     noUncheckedIndexedAccess: true,
     skipLibCheck: true,
     noEmit: true,
-    baseUrl: ROOT,
-    paths: { '@automattic/akismet': ['src/index.ts'] },
+    paths: { '@automattic/akismet': [path.join(ROOT, 'src/index.ts')] },
   };
   const host = ts.createCompilerHost(options);
   const readFile = host.readFile.bind(host);
