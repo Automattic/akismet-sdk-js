@@ -77,12 +77,12 @@ describe('live API in test mode', () => {
     if (wire.limit === 'none') {
       expect(wire.percentage).toBe(0);
     } else {
-      expect(Number.isInteger(wire.limit)).toBe(true);
+      expect(Number.isSafeInteger(wire.limit)).toBe(true);
       expect(wire.percentage).toMatch(/^\d{1,3}(,\d{3})*\.\d{2}$/);
     }
-    expect(Number.isInteger(wire.usage)).toBe(true);
+    expect(Number.isSafeInteger(wire.usage)).toBe(true);
     expect(typeof wire.throttled).toBe('boolean');
-    expect(Number.isInteger(wire.notice_level)).toBe(true);
+    expect(Number.isSafeInteger(wire.notice_level)).toBe(true);
     expect(wire.upgrade === false || typeof wire.upgrade === 'string').toBe(true);
     expect(usage.throttled).toBe(wire.throttled);
   });
@@ -97,7 +97,7 @@ describe('live API in test mode', () => {
     expect(response.contentType).toMatch(PLAIN_TEXT);
     expect(buckets).toEqual([expect.stringMatching(/^\d{4}-\d{2}$/)]);
     expect(wire).toMatchObject({ limit: 5, offset: 0 });
-    expect(Number.isInteger(wire.total)).toBe(true);
+    expect(Number.isSafeInteger(wire.total)).toBe(true);
     expect(sites.month).toBe(buckets[0]);
 
     // A key with no traffic this month has no rows; the shape above still holds.

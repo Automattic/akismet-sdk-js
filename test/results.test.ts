@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { ServerError, SpamVerdict, type GetUsageLimitOptions } from '../src/index.js';
+import { ServerError, SpamVerdict } from '../src/index.js';
 import { clientWith, sentBody } from './wire.js';
 
 function check(body: 'true' | 'false', headers: Record<string, string> = {}) {
   return clientWith(body, headers).client.check({ userIp: '192.0.2.1' });
 }
 
-async function usageLimit(data: Record<string, unknown>, options?: GetUsageLimitOptions) {
-  return clientWith(JSON.stringify(data)).client.getUsageLimit(options);
+async function usageLimit(data: Record<string, unknown>) {
+  return clientWith(JSON.stringify(data)).client.getUsageLimit();
 }
 
 async function subscription(data: Record<string, unknown>) {

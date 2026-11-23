@@ -199,7 +199,7 @@ export class Akismet {
     this.#httpClient = new HttpClient({
       retries: normalizeRetries(options.retries ?? 0),
       applicationUserAgent: normalizeUserAgent(options.applicationUserAgent),
-      fetch: options.fetch ?? globalThis.fetch.bind(globalThis),
+      fetch: options.fetch ?? fetch.bind(globalThis),
     });
   }
 

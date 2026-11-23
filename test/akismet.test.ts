@@ -54,9 +54,9 @@ const ENDPOINTS = {
   getAccessToken: { body: 'token', path: '/1.1/token', call: (c) => c.getAccessToken() },
 } satisfies Record<string, { body: string; path: string; call: Call }>;
 
-type Endpoint = keyof typeof ENDPOINTS;
-
 describe('endpoints', () => {
+  type Endpoint = keyof typeof ENDPOINTS;
+
   it.each(Object.keys(ENDPOINTS) as Endpoint[])(
     '%s POSTs to its path with no query string',
     async (name) => {
@@ -282,7 +282,7 @@ describe('new Akismet', () => {
     [{ apiKey: 12_345 }, 'numeric key'],
     [{ site: 'not a url' }, 'site not a URL'],
     [{ timeoutMs: 0 }, 'zero timeout'],
-    [{ timeoutMs: Number.NaN }, 'NaN timeout'],
+    [{ timeoutMs: NaN }, 'NaN timeout'],
     [{ timeoutMs: -1 }, 'negative timeout'],
     [{ retries: -1 }, 'negative retries'],
     [{ retries: 1.5 }, 'fractional retries'],

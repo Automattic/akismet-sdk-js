@@ -25,7 +25,7 @@ export const akismet = new Akismet({
  */
 export const TRUSTED_PROXY_HOPS = Number(process.env.TRUSTED_PROXY_HOPS ?? 0);
 // Fail at startup, not on every request: NaN or a fraction makes every builder call throw.
-if (!Number.isInteger(TRUSTED_PROXY_HOPS) || TRUSTED_PROXY_HOPS < 0) {
+if (!Number.isSafeInteger(TRUSTED_PROXY_HOPS) || TRUSTED_PROXY_HOPS < 0) {
   throw new Error('TRUSTED_PROXY_HOPS must be a non-negative integer');
 }
 
