@@ -199,7 +199,9 @@ export class Akismet {
     this.#httpClient = new HttpClient({
       retries: normalizeRetries(options.retries ?? 0),
       applicationUserAgent: normalizeUserAgent(options.applicationUserAgent),
-      fetch: options.fetch ?? fetch.bind(globalThis),
+      // An unqualified `fetch` can resolve to a script-level `let`/`const` that shadows the platform fetch.
+      // eslint-disable-next-line unicorn/no-unnecessary-global-this
+      fetch: options.fetch ?? globalThis.fetch.bind(globalThis),
     });
   }
 
